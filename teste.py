@@ -1,4 +1,4 @@
-from sklearn import svm, neighbors, tree, metrics, preprocessing
+from sklearn import svm, neighbors, tree, metrics
 import csv
 import sys
 import numpy as np
@@ -24,8 +24,6 @@ class ocr(object):
             features_treino.append(row)
         csvfile.close()
         
-        #features_treino_norm = preprocessing.normalize(features_treino)
-        
         csvfile = open(self.fteste)
         reader = csv.reader(csvfile, delimiter=',')
         classes_teste = []
@@ -34,13 +32,11 @@ class ocr(object):
         for row in reader:
             features_teste.append(row)
         csvfile.close()
-
-        #features_teste_norm = preprocessing.normalize(features_teste)        
         
         print('classificando')
         
         if self.classifier == 'svm':
-            clf = svm.SVC(kernel='linear',probability=True)
+            clf = svm.SVC()
         elif self.classifier == 'knn':
             clf = neighbors.KNeighborsClassifier(5)
         elif self.classifier == 'dtree':

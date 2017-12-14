@@ -9,8 +9,8 @@ class extract(object):
     def __init__(self, y, x, fin, fout):
         self.fin = fin
         self.fout = fout
-        self.x = x
-        self.y = y
+        self.x = int(x)
+        self.y = int(y)
     
     def execute(self):
         print('Lendo o arquivo...')
@@ -30,44 +30,44 @@ class extract(object):
         i=0
         for line in text:
             img = Image.open(script_dir+line.replace('\r','').replace('\n',''))
-            features.append(self.zoning(img, 4, 4))
+            features.append(self.zoning(img))
             classes.append(line[1])
             sys.stdout.write('\rExtraindo caracteristicas... {}%'.format(100*i/len(text)))
             sys.stdout.flush()
             i=i+1
 
         print('\nEscrevendo no arquivo de saida...')
-        csvfile = open(self.fout,'wb')
+        csvfile = open(self.fout,'w')
         writer = csv.writer(csvfile, delimiter=',')
         writer.writerow(classes)
         writer.writerows(features)
         csvfile.close()
         print('Concluido.')
         
-    def zoning(self, img, y, x):
+    def zoning(self, img):
 
         l, c = img.size
-        x_size = int(math.ceil(c/x))
-        y_size = int(math.ceil(l/y))
+        x_size = int(math.ceil(c/self.x))
+        y_size = int(math.ceil(l/self.y))
 
         zones = []
 
-        for i in range(y):
-            for j in range(x):
+        for i in range(self.y):
+            for j in range(self.x):
 
-                if i == y-1:
-                    k = l
+                if i == self.y-1:
+                    k = l-1
                 else:
-                    k = (i+1)*y_size
-                if j == x-1:
-                    m = c
+                    k = (i+1)*y_size -1
+                if j == self.x-1:
+                    m = c-1
                 else:
-                    m = (j+1)*x_size
+                    m = (j+1)*x_size -1
 
                 z = img.crop([j*x_size, i*y_size, m, k])
                 h = z.histogram()[:2]
                 if (h[0]+h[1])>0:
-                    zones.append(float(h[1])/(l*c))
+                    zones.append(float(h[1])/(h[0]+h[1]))
                 else:
                     zones.append(0.0)
 
